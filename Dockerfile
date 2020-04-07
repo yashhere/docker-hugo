@@ -1,4 +1,4 @@
-FROM debian:buster
+FROM golang:latest
 
 # Install pygments (for syntax highlighting) 
 RUN apt-get -qq update \
