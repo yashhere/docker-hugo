@@ -1,27 +1,19 @@
 FROM golang:latest
 
-# Install pygments (for syntax highlighting) 
+SHELL [ "/bin/bash", "-l", "-c" ]
+
+# Install pygments (for syntax highlighting)
 RUN apt-get -qq update \
 	&& DEBIAN_FRONTEND=noninteractive apt-get -qq install -y --no-install-recommends libstdc++6 python-pygments git ca-certificates asciidoc curl \
 	&& rm -rf /var/lib/apt/lists/*
 
-# NODE JS INSTALLATION - https://gist.github.com/remarkablemark/aacf14c29b3f01d6900d13137b21db3a 
-# nvm environment variables
-ENV NVM_DIR $HOME/.nvm
-ENV NODE_VERSION 4.4.7
-
 # install nvm
-# https://github.com/creationix/nvm#install-script
-RUN curl --silent -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
+RUN apt-get update && apt-get install -y curl
+RUN curl --silent -o- https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash
+# this now works
+RUN nvm install node
 
-# install node and npm
-RUN source $NVM_DIR/nvm.sh \
-    && nvm install node
-
-# confirm installation
-RUN node -v
-RUN npm -v
-
+# install gsheets
 RUN npm install gsheets -g
 
 # Configuration variables
