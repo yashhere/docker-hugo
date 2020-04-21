@@ -1,20 +1,32 @@
 FROM golang:latest
 
-SHELL [ "/bin/bash", "-l", "-c" ]
+ARG DEBIAN_FRONTEND=noninteractive
+
+# replace shell with bash so we can source files
+RUN rm /bin/sh && ln -s /bin/bash /bin/sh
 
 # Install pygments (for syntax highlighting)
 RUN apt-get -qq update \
-	&& DEBIAN_FRONTEND=noninteractive apt-get -qq install -y --no-install-recommends libstdc++6 python-pygments git ca-certificates asciidoc curl \
-	&& rm -rf /var/lib/apt/lists/*
+    && DEBIAN_FRONTEND=noninteractive apt-get -qq install -y --no-install-recommends libstdc++6 git ca-certificates asciidoc curl \
+    && rm -rf /var/lib/apt/lists/*
+
+ENV NVM_DIR /usr/local/nvm
+RUN mkdir -p "$NVM_DIR"
 
 # install nvm
 RUN apt-get update && apt-get install -y curl
-RUN curl --silent -o- https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash
+RUN curl -o- https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash
+#RUN source $NVM_DIR/nvm.sh
 # this now works
-RUN nvm install node
+RUN bash -i -c 'nvm install --lts --latest-npm'
+
+
+# add node and npm to path so the commands are available
+ENV NODE_PATH $NVM_DIR/v$NODE_VERSION/lib/node_modules
+ENV PATH $NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
 
 # install gsheets
-RUN npm install gsheets -g
+RUN bash -i -c 'npm install gsheets -g'
 
 # Configuration variables
 ENV HUGO_VERSION 0.68.3
