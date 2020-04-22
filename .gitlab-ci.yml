@@ -1,0 +1,33 @@
+image: docker:latest
+
+services:
+  - docker:dind
+
+stages:
+- build
+- test
+- push
+
+variables:
+  TAG_NAME: registry.gitlab.com/yashhere/docker-hugo:$CI_COMMIT_REF_NAME
+
+before_script:
+  - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN registry.gitlab.com
+
+build:hugo:
+  artifacts:
+    paths:
+      - docker-images
+  stage: build
+  script:
+    - mkdir docker-images
+    - docker build --pull -t $DJANGO_TAG_NAME .
+  only:
+    - master
+
+push:django:
+  stage: push
+  script:
+    - docker push $DJANGO_TAG_NAME
+  only:
+    - master
