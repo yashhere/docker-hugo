@@ -3,10 +3,8 @@ FROM golang:latest
 RUN curl -sL https://deb.nodesource.com/setup_13.x | bash -
 
 RUN apt-get -qq update \
-    && DEBIAN_FRONTEND=noninteractive apt-get -qq install -y --no-install-recommends libstdc++6 git ca-certificates asciidoc curl nodejs \
+    && DEBIAN_FRONTEND=noninteractive apt-get -qq install -y --no-install-recommends libstdc++6 git ca-certificates asciidoc curl imagemagick jq make \
     && rm -rf /var/lib/apt/lists/*
-
-RUN npm -g install gsheets --unsafe-perm
 
 # Configuration variables
 ENV HUGO_VERSION 0.69.1
