@@ -7,16 +7,25 @@ RUN apt-get -qq update \
     && rm -rf /var/lib/apt/lists/*
 
 # Configuration variables
-ENV HUGO_VERSION 0.69.1
-ENV HUGO_BINARY hugo_extended_${HUGO_VERSION}_Linux-64bit.deb
+# ENV HUGO_VERSION 0.69.1
+# ENV HUGO_BINARY hugo_extended_${HUGO_VERSION}_Linux-64bit.deb
 ENV SITE_DIR '/usr/share/blog'
 
+# RUN export HUGO_BINARY_URL=$(curl -s https://api.github.com/repos/gohugoio/hugo/releases/latest | grep -oP '"tag_name": "\K(.*)(?=")')
+
 # Download and install hugo
-RUN curl -sL -o /tmp/hugo.deb \
-    https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/${HUGO_BINARY} && \
+RUN curl -s https://api.github.com/repos/gohugoio/hugo/releases/latest \
+    | jq -r ".assets[] | select(.name | contains(\"hugo_extended\") and contains(\"Linux-64bit.deb\")) | .browser_download_url" \
+    | wget -O /tmp/hugo.deb -i - && \
     dpkg -i /tmp/hugo.deb && \
     rm /tmp/hugo.deb && \
     mkdir ${SITE_DIR}
+
+# RUN curl -sL -o /tmp/hugo.deb \
+#     https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/${HUGO_BINARY} && \
+#     dpkg -i /tmp/hugo.deb && \
+#     rm /tmp/hugo.deb && \
+#     mkdir ${SITE_DIR}
 
 WORKDIR ${SITE_DIR}
 
